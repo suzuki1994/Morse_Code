@@ -73,8 +73,7 @@ architecture rtl of de10_lite_Morse is
     signal rst : std_logic;
     signal entrada : integer;
     signal buzzer : std_logic;
-    signal conversor : unsigned(4 downto 0);
-    signal chaves: unsigned(4 downto 0);
+    signal chaves: unsigned(4 downto 0); 
     
 begin
 	final:entity work.MorseCodeBuzzer
@@ -82,19 +81,21 @@ begin
 	        clk     => clk,
 	        rst     => rst,
 	        entrada => entrada,
-			  ledt=>LEDR(2),
-			  ledf=>LEDR(8),
-			  led3t=>LEDR(4),
-	        buzzer  => ARDUINO_IO(1)
+			  ledt=>LEDR(2), -- led do tempo T
+			  ledf=>LEDR(8), -- led de fim do número
+			  led3t=>LEDR(4),-- led do tempo 3T
+	        buzzer  => ARDUINO_IO(1)-- pino do meio do modulo do buzzer
 	    );
-	rst<=SW(9);
-	chaves(0)<=SW(0);
+
+	 entrada<=to_integer(chaves);-- converte as chaves para inteiro, para ir para a entrada 
+	rst<=SW(9);-- reset
+	chaves(0)<=SW(0);-- chaves de entrada dos números
 	chaves(1)<=SW(1);
 	chaves(2)<=SW(2);
 	chaves(3)<=SW(3);
 	chaves(4)<=SW(4);
 	
-	PLL_inst : entity work.PLL_Morse--
+	PLL_inst : entity work.PLL_Morse --clock de 10M e dividido por 4000 (2.5khz)
         port map(
             inclk0 => ADC_CLK_10,
             c0     => clk
